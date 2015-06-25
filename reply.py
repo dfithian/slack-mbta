@@ -10,14 +10,21 @@ class Reply(object):
     @abc.abstractmethod
     def __call__(self):
         """Return information from server in a human-readable format"""
-    def adopt(self, dictionary):
-        print 'Adopt called'
-        self.dictionary = dictionary
 
-class BusReply(Reply):
-    def __call__(self):
-        return ['BusReply object'] # FIXME format reply object
+class MBTAReply(Reply):
+    def adopt(self, j):
+        self.dictionary = json.loads(j)
 
-class AlertReply(Reply):
+class MBTABusReply(MBTAReply):
     def __call__(self):
-        return ['AlertReply object'] # FIXME format reply object
+        return ['MBTABusReply object'] # FIXME format reply object
+
+class MBTAAlertReply(MBTAReply):
+    def __call__(self):
+        return ['MBTAAlertReply object'] # FIXME format reply object
+
+class OutgoingSlackReply(Reply):
+    def adopt(self, msg):
+        self.dictionary = { 'response_message' : msg }
+    def __call__(self):
+        return ['OutgoingSlackReply object'] # FIXME format reply object

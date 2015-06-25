@@ -1,20 +1,28 @@
 class Request(object):
+    def __init__(self, url, payload):
+        self.url = url
+        self.payload = payload
+
+class MBTARequest(Request):
     KEY = "UCdH9ujVZUSCBV8GGHh8EQ"
     API_BASE = 'http://realtime.mbta.com/developer/api/v2/'
-    BASE_PARAMETERS = { 'format' : 'json' }
+    BASE_PARAMETERS = dict(format='json', api_key=KEY)
     def __init__(self, endpoint, parameters):
-        self.endpoint = endpoint
-        self.parameters = self.BASE_PARAMETERS.copy()
-        self.parameters.update(parameters)
-    def __call__(self):
-        return (self.API_BASE + '{0}?api_key={1}&{2}').format(self.endpoint, self.KEY, self.serialize_parameters())
-    def serialize_parameters(self):
-        return '&'.join((k + '=' + v) for k, v in self.parameters.iteritems())
+        params = self.BASE_PARAMETERS.copy()
+        params.update(parameters)
+        serialized_params = '&'.join((k + '=' + v) for k, v in params.iteritems())
+        url = self.API_BASE + '{0}?{1}'.format(endpoint, serialized_params)
+        super(MBTARequest, self).__init__(url, None)
 
-class BusRequest(Request):
+class MBTABusRequest(MBTARequest):
     def __init__(self, stop):
-        super(BusRequest, self).__init__('predictionsbystop', { 'stop' : stop })
+        super(MBTABusRequest, self).__init__('predictionsbystop', { 'stop' : stop })
 
-class AlertRequest(Request):
+class MBTAAlertRequest(MBTARequest):
     def __init__(self):
-        super(AlertRequest, self).__init__('alerts', { })
+        super(MBTAAlertRequest, self).__init__('alertheaders', { })
+
+class OutgoingSlackRequest(Request):
+    URL_BASE = 'https://hooks.slack.com/services/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'
+    def __init__(self, parameters):
+        super(SlackRequest, self).__init__(self.URL_BASE, parameters)

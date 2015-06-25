@@ -1,19 +1,13 @@
-import enum
 import abc
+import datetime
+from config import OutputType
 
 """Formats output depending on environment (console or slack)"""
-
-class OutputType(enum.Enum):
-    CONSOLE = "console"
-    SLACK = "slack"
-    FILE = "file"
 
 class OutputFactory(object):
     @staticmethod
     def get_outputter(config):
-        if config.output_type is OutputType.CONSOLE:
-            return ConsoleOutputter(config)
-        elif config.output_type is OutputType.SLACK:
+        if config.output_type is OutputType.SLACK:
             return SlackOutputter(config)
         elif config.output_type is OutputType.FILE:
             return FileOutputter(config)
@@ -29,16 +23,21 @@ class Output(object):
         """Output some reply from the server to an appropriate format"""
         return
 
-class ConsoleOutputter(Output):
-    def __call__(self, reply):
-        print '\n'.join(str(line) for line in reply())
-
 class SlackOutputter(Output):
     def __call__(self, reply):
-        print '```' + '\n'.join(str(line) for line in reply()) + '```'
+        return {
+            'text' : '```{0}```'.format('\n'.join(str(line) for line in reply()))
+        }
 
 class FileOutputter(Output):
+    def format_datetime(self):
+        return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S ")
     def __call__(self, reply):
-        f = open(self.config.output_filename, 'w')
-        f.write('\n'.join(str(line) for line in reply()))
-        f.close()
+        if self.config.output_filename is not None:
+            t = self.format_datetime()
+            f = open(self.config.output_filename, 'a')
+            f.write('\n'.join(t + str(line) for line in reply()))
+            f.write('\n') # end with newline
+            f.close()
+        else:
+            print 'Got instructions to output to file, but output_filename was None!'

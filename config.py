@@ -1,12 +1,17 @@
+import enum
 import argparse
 import sys
 import json
-from output import OutputType
 
 """Configuration module"""
+
+class OutputType(enum.Enum):
+    SLACK = "slack"
+    FILE = "file"
+
 MAX_BUS_LINES_DEFAULT = 3
 MAX_ALERTS_DEFAULT = 3
-OUTPUT_DEFAULT = OutputType.CONSOLE
+OUTPUT_DEFAULT = OutputType.SLACK
 
 class Config(object):
     def __init__(self, dictionary):
@@ -16,20 +21,19 @@ class Config(object):
         self.max_bus_lines = getattr(dictionary, "max_bus_lines", MAX_BUS_LINES_DEFAULT)
         self.max_alerts = getattr(dictionary, "max_alerts", MAX_ALERTS_DEFAULT)
         self.output_type = getattr(dictionary, "output", OUTPUT_DEFAULT)
-        self.output_filename = getattr(dictionary, "output_filename", None)
+        self.output_filename = getattr(dictionary, "output_filename", '/Users/dan/dev/slack-mbta/output.txt')
     @staticmethod
     def default():
         default_dict = {
             "max_bus_lines" : MAX_BUS_LINES_DEFAULT,
             "max_alerts" : MAX_ALERTS_DEFAULT,
             "output_type" : OUTPUT_DEFAULT,
-            "output_filename" : None
+            "output_filename" : '/Users/dan/dev/slack-mbta/output.txt'
         }
         return Config(default_dict)
 
 class ConfigAction(argparse.Action):
     def __init__(self, option_strings, dest, nargs=None, **kwargs):
-        print 'ConfigAction __init__() called'
         self.dest = dest
         self.type = str
         self.metavar = None
