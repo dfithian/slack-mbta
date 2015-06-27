@@ -1,0 +1,39 @@
+#!/bin/bash
+
+project=MBTA_SLACK_HOME
+
+# Start the services
+start(){
+    echo "Passing arguments $@ to ${project}/main.py"
+    nohup python ${project}/main.py "$@" >/dev/null 2>&1 &
+}
+
+# Stop the services
+stop(){
+    CPID=$(pgrep -f "python ${project}/main.py") # current process id
+    if [ "$CPID" != "" ]
+        then
+        kill $CPID
+    fi
+}
+
+# Main program
+case "$1" in
+    start)
+        start "${@:2}"
+        echo "Started services"
+        ;;
+    stop)
+        stop
+        echo "Stopped services"
+        ;;
+    restart|reload)
+        stop
+        start
+        echo "Restarted services"
+        ;;
+    @)
+        echo "Usage: $0 {start|stop|restart|reload}"
+        exit 1
+esac
+exit 0

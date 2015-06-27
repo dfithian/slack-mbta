@@ -2,9 +2,10 @@ import enum
 import argparse
 import sys
 import json
+import logging
 
 """Configuration module"""
-
+log = logging.getLogger(__name__)
 class OutputType(enum.Enum):
     SLACK = "slack"
     FILE = "file"
@@ -16,7 +17,7 @@ OUTPUT_DEFAULT = OutputType.SLACK
 class Config(object):
     def __init__(self, dictionary):
         if dictionary is None:
-            print 'Configuration dictionary was None.'
+            log.error('Configuration dictionary was None. Exiting.')
             sys.exit(1)
         self.max_bus_lines = getattr(dictionary, "max_bus_lines", MAX_BUS_LINES_DEFAULT)
         self.max_alerts = getattr(dictionary, "max_alerts", MAX_ALERTS_DEFAULT)
@@ -46,14 +47,13 @@ class ConfigAction(argparse.Action):
         self.const = kwargs["const"]
         self.config = None
     def __call__(self, parser, namespace, values, option_string):
-        print 'ConfigAction __call__() called'
         if values and values[0]:
             try:
                 f = open(values[0], 'r')
                 self.config = json.loads(f.read())
             except IOError:
-                print "Oops, IOError!"
+                log.exception("Oops, IOError!")
         if self.config is None:
-            print 'Config is None. Loading default.'
+            log.info('Config is None. Loading default.')
             self.config = Config.default()
         setattr(namespace, self.dest, self.config)

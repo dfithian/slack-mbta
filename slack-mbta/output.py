@@ -1,9 +1,10 @@
 import abc
 import datetime
+import logging
 from config import OutputType
 
 """Formats output depending on environment (console or slack)"""
-
+log = logging.getLogger(__name__)
 class OutputFactory(object):
     @staticmethod
     def get_outputter(config):
@@ -12,7 +13,7 @@ class OutputFactory(object):
         elif config.output_type is OutputType.FILE:
             return FileOutputter(config)
         else:
-            print('output_type was type %r but was expecting one of OutputType' % (type(config.output_type)))
+            log.error('output_type was type %r but was expecting one of OutputType' % (type(config.output_type)))
 
 class Output(object):
     __metaclass__ = abc.ABCMeta
@@ -40,4 +41,4 @@ class FileOutputter(Output):
             f.write('\n') # end with newline
             f.close()
         else:
-            print 'Got instructions to output to file, but output_filename was None!'
+            log.warn('Got instructions to output to file, but output_filename was None!')

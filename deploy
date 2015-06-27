@@ -1,0 +1,9 @@
+src_dir="$(pwd)/slack-mbta"
+src_dir="${src_dir//\//\\/}"
+
+echo "Editing slack-mbta.sh.ins to export working directory as MBTA_SLACK_HOME on launch"
+sed "s/MBTA_SLACK_HOME/$src_dir/g" slack-mbta.ins > slack-mbta.sh
+echo "Moving start and stop script to /etc/init.d/slack-mbta.sh"
+sudo mv slack-mbta.sh /etc/init.d/slack-mbta
+echo "Enabling /etc/init.d/slack-mbta for execution"
+chmod +x /etc/init.d/slack-mbta
