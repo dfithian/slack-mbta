@@ -8,11 +8,13 @@ from route_resolver import resolve_route
 from config import ConfigAction, Config
 from transaction import TransactionContext
 from output import OutputFactory
+from web.wsgiserver import CherryPyWSGIServer
 
 VERSION='1.0'
+base_dir = os.path.dirname(os.path.realpath(__file__))
 def start_logging(is_debug, log_file=None):
     logging.basicConfig(
-        filename=log_file if log_file is not None else os.path.dirname(os.path.realpath(__file__))  + '/slack-mbta.log',
+        filename=log_file if log_file is not None else  base_dir + '/slack-mbta.log',
         level=(logging.DEBUG if is_debug else logging.INFO),
         format='%(asctime)s %(levelname)s - %(message)s'
     )
@@ -24,6 +26,9 @@ def start_logging(is_debug, log_file=None):
 def transaction_flow(txn_context, config, outputter):
     mbta_reply = txn_context.do_transaction()
     return json.dumps(outputter(mbta_reply))
+
+CherryPyWSGIServer.ssl_certificate = base_dir + '/../cert/server.crt'
+CherryPyWSGIServer.ssl_private_key = base_dir + '/../cert/server.key'
 
 parser = argparse.ArgumentParser(description="Get MBTA info", epilog="(c) 2015 Dan Fithian")
 
