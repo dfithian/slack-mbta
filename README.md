@@ -6,9 +6,9 @@ This repository contains a Slack plugin for the MBTA.
 To set it up, you must do a few things:
 - Edit the final line in main.py to bind an IP and port: `app.run(port=8080,ip='127.0.0.1')`
 - Create a few slash command integrations:
-  - /bus [number] -> GET to https://<hostname>:<port>/bus/[number]
-  - /alert [route] -> GET to https://<hostname>:<port>/alert/[route]
-  - /alerts -> GET to https://<hostname>:<port>/alerts
+  - /bus [number] -> GET to https://HOSTNAME:PORT/bus/[number]
+  - /alert [route] -> GET to https://HOSTNAME:PORT/alert/[route]
+  - /alerts -> GET to https://HOSTNAME:PORT/alerts
 - Install the egg (dependencies) by running python setup.py install
 - Run the deployment script and answer the questions: `bash deploy`
 - Run your app: `/etc/init.d/slack-mbta`
