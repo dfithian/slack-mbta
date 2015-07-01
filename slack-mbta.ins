@@ -1,12 +1,10 @@
 #!/bin/bash
 
 project=MBTA_SLACK_HOME
-start_options="-l /home/devbuild/slack-mbta/slack-mbta.log -d -p 8080 -ip tracker.corp.paytronix.com"
 
 # Start the services
 start(){
-    echo "Passing arguments $@ to ${project}/main.py"
-    nohup python ${project}/main.py "$@" >/dev/null 2>&1 &
+    nohup python ${project}/main.py -l /home/devbuild/slack-mbta/slack-mbta.log -d -p 8080 -ip tracker.corp.paytronix.com >/dev/null 2>&1 &
 }
 
 # Stop the services
@@ -21,7 +19,7 @@ stop(){
 # Main program
 case "$1" in
     start)
-        start "$start_options"
+        start
         echo "Started services"
         ;;
     stop)
@@ -30,7 +28,7 @@ case "$1" in
         ;;
     restart|reload)
         stop
-        start "$start_options"
+        start
         echo "Restarted services"
         ;;
     @)
