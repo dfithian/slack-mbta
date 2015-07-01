@@ -25,10 +25,10 @@ class Output(object):
         return
 
 class SlackOutputter(Output):
-    def __call__(self, reply):
-        return {
-            'text' : '```{0}```'.format('\n'.join(str(line) for line in reply()))
-        }
+    def __call__(self, request, reply):
+        request_info = ("Request %r response:\r\n" % str(request))
+        reply_info = '```{0}```'.format('\r\n'.join(str(line) for line in reply()))
+        return (request_info + reply_info)
 
 class FileOutputter(Output):
     def format_datetime(self):

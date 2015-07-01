@@ -19,10 +19,10 @@ class Config(object):
         if dictionary is None:
             log.error('Configuration dictionary was None. Exiting.')
             sys.exit(1)
-        self.max_bus_lines = getattr(dictionary, "max_bus_lines", MAX_BUS_LINES_DEFAULT)
-        self.max_alerts = getattr(dictionary, "max_alerts", MAX_ALERTS_DEFAULT)
-        self.output_type = getattr(dictionary, "output", OUTPUT_DEFAULT)
-        self.output_filename = getattr(dictionary, "output_filename", '/Users/dan/dev/slack-mbta/output.txt')
+        self.max_bus_lines = dictionary.get('max_bus_lines', MAX_BUS_LINES_DEFAULT)
+        self.max_alerts = dictionary.get('max_alerts', MAX_ALERTS_DEFAULT)
+        self.output_type = dictionary.get('output', OUTPUT_DEFAULT)
+        self.output_filename = dictionary.get('output_filename', '/Users/dan/dev/slack-mbta/output.txt')
     @staticmethod
     def default():
         default_dict = {

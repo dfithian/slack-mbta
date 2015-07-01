@@ -2,8 +2,8 @@ import json
 import urllib
 import urllib2
 import logging
-from request import MBTAAlertsRequest, MBTAAlertRouteRequest, MBTABusRequest, OutgoingSlackRequest
-from reply import MBTAAlertsReply, MBTABusReply, OutgoingSlackReply
+from request import MBTAAlertsRequest, MBTAAlertRouteRequest, MBTABusRequest
+from reply import MBTAAlertsReply, MBTABusReply
 
 log = logging.getLogger(__name__)
 class TransactionContext(object):
@@ -24,7 +24,7 @@ class TransactionContext(object):
             self.reply.adopt(j)
         except Exception:
             log.exception('Got exception during do_transaction()')
-        return self.reply
+            self.reply.adopt("{}")
     @staticmethod
     def MBTA_BUS(config, bus):
         return TransactionContext(MBTABusRequest(bus), MBTABusReply(config))
@@ -34,6 +34,3 @@ class TransactionContext(object):
     @staticmethod
     def MBTA_ALERTS(config):
         return TransactionContext(MBTAAlertsRequest(), MBTAAlertsReply(config))
-    @staticmethod
-    def SLACK_OUTGOING(config, payload):
-        return TransactionContext(OutgoingSlackRequest(payload), OutgoingSlackReply(config))

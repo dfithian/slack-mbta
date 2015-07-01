@@ -16,17 +16,20 @@ class MBTARequest(Request):
 
 class MBTABusRequest(MBTARequest):
     def __init__(self, route):
+        self.route = route
         super(MBTABusRequest, self).__init__('predictionsbyroute', { 'route' : route })
+    def __str__(self):
+        return ("*/bus %r*" % str(self.route))
 
 class MBTAAlertRouteRequest(MBTARequest):
     def __init__(self, route):
+        self.route = route
         super(MBTAAlertRouteRequest, self).__init__('alertheadersbyroute', { 'route' : route })
+    def __str__(self):
+        return ("*/alert %r*" % str(self.route))
 
 class MBTAAlertsRequest(MBTARequest):
     def __init__(self):
         super(MBTAAlertsRequest, self).__init__('alertheaders', { })
-
-class OutgoingSlackRequest(Request):
-    URL_BASE = 'https://hooks.slack.com/services/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'
-    def __init__(self, parameters):
-        super(SlackRequest, self).__init__(self.URL_BASE, parameters)
+    def __str__(self):
+        return ("*/alerts*")
