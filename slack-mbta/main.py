@@ -32,6 +32,7 @@ parser = argparse.ArgumentParser(description="Get MBTA info", epilog="(c) 2015 D
 
 parser.add_argument("-l", dest="log_file", help="Specify a log file", default=None)
 parser.add_argument("-p", dest="port", type=int, help="Specify a port to listen on", default="8080")
+parser.add_argument("-ip", dest="ip", type=str, help="Specify an IP to bind", default="0.0.0.0")
 parser.add_argument("-c", dest="config", type=str, help="Provide a config file", const=None, action=ConfigAction)
 parser.add_argument("-d", dest="debug", action="store_true", help="Enable debug logging")
 
@@ -51,9 +52,9 @@ urls = (
 
 class SlackApp(web.application):
     def run(self, *middleware):
-        log.info("Starting web application")
+        log.info("Starting web application with address {0}:{1}".format(args.ip, args.port))
         func = self.wsgifunc(*middleware)
-        return web.httpserver.runsimple(func, server_address=('0.0.0.0', args.port))
+        return web.httpserver.runsimple(func, server_address=(args.ip, args.port))
 
 class get_bus:
     def GET(self):
