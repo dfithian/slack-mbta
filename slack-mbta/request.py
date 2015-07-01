@@ -19,14 +19,14 @@ class MBTABusRequest(MBTARequest):
         self.route = route
         super(MBTABusRequest, self).__init__('predictionsbyroute', { 'route' : route })
     def __str__(self):
-        return ("*/bus %r*" % str(self.route))
+        return "*/bus {0}*".format(str(self.route))
 
 class MBTAAlertRouteRequest(MBTARequest):
     def __init__(self, route):
         self.route = route
         super(MBTAAlertRouteRequest, self).__init__('alertheadersbyroute', { 'route' : route })
     def __str__(self):
-        return ("*/alert %r*" % str(self.route))
+        return "*/alert {0}*".format(str(self.route))
 
 class MBTAAlertsRequest(MBTARequest):
     def __init__(self):

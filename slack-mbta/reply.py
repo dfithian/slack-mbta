@@ -19,7 +19,7 @@ class MBTAReply(Reply):
         try:
             self.dictionary = json.loads(j)
         except Exception:
-            log.exception('Got exception loading invalid json %r' % (j))
+            log.exception('Got exception loading invalid json {0}'.format(j))
             self.dictionary = dict()
 
 class MBTABusReply(MBTAReply):

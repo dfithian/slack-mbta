@@ -13,7 +13,7 @@ class OutputFactory(object):
         elif config.output_type is OutputType.FILE:
             return FileOutputter(config)
         else:
-            log.error('output_type was type %r but was expecting one of OutputType' % (type(config.output_type)))
+            log.error('output_type was type {0} but was expecting one of OutputType'.format(type(config.output_type)))
 
 class Output(object):
     __metaclass__ = abc.ABCMeta
@@ -26,7 +26,7 @@ class Output(object):
 
 class SlackOutputter(Output):
     def __call__(self, request, reply):
-        request_info = ("Request %r response:\r\n" % str(request))
+        request_info = "Request {0} response:\r\n".format(str(request))
         reply_info = '```{0}```'.format('\r\n'.join(str(line) for line in reply()))
         return (request_info + reply_info)
 

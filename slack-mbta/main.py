@@ -20,8 +20,8 @@ def start_logging(is_debug, log_file=None):
     options = base_options if log_file is None else dict(dict(filename=log_file), **base_options)
     logging.basicConfig(**options)
     log = logging.getLogger(__name__)
-    log.info("Logger started with options is_debug=%r, log_file=%r" % (str(is_debug), log_file))
-    log.info("Slack-MBTA version %r" % (VERSION))
+    log.info("Logger started with options is_debug={0}, log_file={1}".format(str(is_debug), log_file))
+    log.info("Slack-MBTA version {0}".format(VERSION))
     return log
 
 def transaction_flow(txn_context, config, outputter):
@@ -59,7 +59,7 @@ class SlackApp(web.application):
 class get_bus:
     def GET(self):
         route = web.input().text
-        log.info("Received request for bus route %r" % (route))
+        log.info("Received request for bus route {0}".format(route))
         payload = transaction_flow(
             TransactionContext.MBTA_BUS(
                 config,
@@ -68,12 +68,12 @@ class get_bus:
             config,
             outputter
         )
-        log.info("Replying with %r" % (payload))
+        log.info("Replying with {0}".format(payload))
         return payload
 class get_alert:
     def GET(self):
         route = web.input().text
-        log.info("Received alert request for route %r" % (route))
+        log.info("Received alert request for route {0}".format(route))
         payload = transaction_flow(
             TransactionContext.MBTA_ALERT(
                 config,
@@ -82,7 +82,7 @@ class get_alert:
             config,
             outputter
         )
-        log.info("Replying with %r" % (payload))
+        log.info("Replying with {0}".format(payload))
         return payload
 class get_alerts:
     def GET(self):
@@ -94,7 +94,7 @@ class get_alerts:
             config,
             outputter
         )
-        log.info("Replying with %r" % (payload))
+        log.info("Replying with {0}".format(payload))
         return payload
 
 #CherryPyWSGIServer.ssl_certificate = base_dir + '/../cert/server.crt'

@@ -17,10 +17,10 @@ class TransactionContext(object):
         else:
             data = json.dumps(self.request.payload)
             req = urllib2.Request(self.request.url, data)
-        log.info('About to send request with payload %r to url %r' % (data, self.request.url))
+        log.info('About to send request with payload {0} to url {1}'.format(data, self.request.url))
         try:
             j = urllib2.urlopen(req).read()
-            log.info('Got raw reply ' + j)
+            log.info('Got raw reply {0}'.format(j))
             self.reply.adopt(j)
         except Exception:
             log.exception('Got exception during do_transaction()')
