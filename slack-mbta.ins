@@ -1,6 +1,7 @@
 #!/bin/bash
 
 project=MBTA_SLACK_HOME
+start_options="-l /home/devbuild/slack-mbta/slack-mbta.log -d -p 8080 -ip tracker.corp.paytronix.com"
 
 # Start the services
 start(){
@@ -20,7 +21,7 @@ stop(){
 # Main program
 case "$1" in
     start)
-        start "${@:2}"
+        start "$start_options"
         echo "Started services"
         ;;
     stop)
@@ -29,7 +30,7 @@ case "$1" in
         ;;
     restart|reload)
         stop
-        start
+        start "$start_options"
         echo "Restarted services"
         ;;
     @)

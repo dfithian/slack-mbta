@@ -97,8 +97,8 @@ class get_alerts:
         log.info("Replying with %r" % (payload))
         return payload
 
-CherryPyWSGIServer.ssl_certificate = base_dir + '/../cert/server.crt'
-CherryPyWSGIServer.ssl_private_key = base_dir + '/../cert/server.key'
+#CherryPyWSGIServer.ssl_certificate = base_dir + '/../cert/server.crt'
+#CherryPyWSGIServer.ssl_private_key = base_dir + '/../cert/server.key'
 if __name__ == "__main__":
     app = SlackApp(urls, globals())
     app.run()
