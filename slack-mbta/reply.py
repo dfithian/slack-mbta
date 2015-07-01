@@ -30,28 +30,38 @@ class MBTABusReply(MBTAReply):
             for stop in stops:
                 if stop.get('stop_id', None) in relevant_stops:
                     delta = long(round((long(stop["sch_arr_dt"]) - time.mktime(time.localtime()))/60))
-                    stop_summaries.append("    %r in %r minutes" % (str(stop["stop_name"]), str(delta)))
+                    stop_name = str(stop.get('stop_name', 'none'))
+                    stop_summaries.append("        at {0} in {1} minutes".format(stop_name, str(delta)))
         return stop_summaries
     def filter_trip(self, trips, route):
-        trip_summaries = []
+        trip_summaries = {}
         if trips is not None and len(trips) > 0:
             for trip in trips:
                 stop_summaries = self.filter_route(trip.get('stop', None), route)
                 if len(stop_summaries) > 0:
-                    trip_summaries.extend(["Trip %r" % str(trip.get('trip_headsign', None))] + stop_summaries)
-        return trip_summaries
+                    trip_headsign = str(trip.get('trip_headsign', 'none'))
+                    similar_trips = trip_summaries.get(trip_headsign, None)
+                    if similar_trips is not None:
+                        trip_summaries[trip_headsign].extend(stop_summaries)
+                    else:
+                        trip_summaries[trip_headsign] = ["    Trip {0}".format(trip_headsign)] + stop_summaries
+        return reduce(lambda x,y: x.extend(y), trip_summaries.values()) if trip_summaries.values() is not None else []
     def filter_direction(self, directions, route):
         direction_summaries = []
         if directions is not None and len(directions) > 0:
             for direction in directions:
                 trip_summary = self.filter_trip(direction.get('trip', None), route)
                 if len(trip_summary) > 0:
-                    direction_summaries.extend([("Direction: %r" % str(direction["direction_name"]))] + trip_summary)
+                    direction_summaries.extend(["Direction: {0}".format(str(direction["direction_name"]))] + trip_summary)
         else:
             direction_summaries = ['No predictions']
         return direction_summaries
     def __call__(self):
-        return self.filter_direction(self.dictionary.get('direction', None), self.dictionary.get('route_id'))
+        try:
+            return self.filter_direction(self.dictionary.get('direction', None), self.dictionary.get('route_id'))
+        except Exception:
+            log.exception('Failed to filter relevant response informaton')
+            return ['An error occurred']
 
 class MBTAAlertsReply(MBTAReply):
     def __call__(self):
