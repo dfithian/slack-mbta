@@ -43,7 +43,7 @@ class MBTABusReply(Reply):
                         trip_summaries[trip_headsign].extend(stop_summaries)
                     else:
                         trip_summaries[trip_headsign] = ["    Trip {0}".format(trip_headsign)] + stop_summaries
-        return reduce(lambda x,y: x.extend(y), trip_summaries.values()) if trip_summaries.values() is not None else []
+        return reduce(lambda x,y: x.extend(y), trip_summaries.values()) if len(trip_summaries.values()) > 0 else []
     def filter_direction(self, directions, route):
         direction_summaries = []
         if directions is not None and len(directions) > 0:
