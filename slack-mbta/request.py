@@ -33,3 +33,8 @@ class MBTAAlertsRequest(MBTARequest):
         super(MBTAAlertsRequest, self).__init__('alertheaders', { })
     def __str__(self):
         return ("*/alerts*")
+
+class SlackRequest(Request):
+    WEBHOOK_URL = 'https://hooks.slack.com/services/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'
+    def __init__(self, payload):
+        super(SlackRequest, self).__init__(self.WEBHOOK_URL, payload)

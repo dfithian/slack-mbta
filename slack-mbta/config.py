@@ -15,6 +15,7 @@ MAX_ALERTS_DEFAULT = 3
 OUTPUT_DEFAULT = OutputType.SLACK
 
 class Config(object):
+    this = None
     def __init__(self, dictionary):
         if dictionary is None:
             log.error('Configuration dictionary was None. Exiting.')
@@ -32,6 +33,9 @@ class Config(object):
             "output_filename" : '/Users/dan/dev/slack-mbta/output.txt'
         }
         return Config(default_dict)
+    @staticmethod
+    def instance():
+        return Config.this
 
 class ConfigAction(argparse.Action):
     def __init__(self, option_strings, dest, nargs=None, **kwargs):

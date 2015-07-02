@@ -2,8 +2,8 @@ import json
 import urllib
 import urllib2
 import logging
-from request import MBTAAlertsRequest, MBTAAlertRouteRequest, MBTABusRequest
-from reply import MBTAAlertsReply, MBTABusReply
+from request import MBTAAlertsRequest, MBTAAlertRouteRequest, MBTABusRequest, SlackRequest
+from reply import MBTAAlertsReply, MBTABusReply, SlackReply
 
 log = logging.getLogger(__name__)
 class TransactionContext(object):
@@ -15,7 +15,7 @@ class TransactionContext(object):
             data = None
             req = urllib2.Request(self.request.url)
         else:
-            data = json.dumps(self.request.payload)
+            data = urllib.urlencode(self.request.payload)
             req = urllib2.Request(self.request.url, data)
         log.info('About to send request with payload {0} to url {1}'.format(data, self.request.url))
         try:
@@ -26,11 +26,14 @@ class TransactionContext(object):
             log.exception('Got exception during do_transaction()')
             self.reply.adopt("{}")
     @staticmethod
-    def MBTA_BUS(config, bus):
+    def MBTA_BUS_TXN_CONTEXT(config, bus):
         return TransactionContext(MBTABusRequest(bus), MBTABusReply(config))
     @staticmethod
-    def MBTA_ALERT(config, route):
+    def MBTA_ALERT_TXN_CONTEXT(config, route):
         return TransactionContext(MBTAAlertRouteRequest(route), MBTAAlertsReply(config))
     @staticmethod
-    def MBTA_ALERTS(config):
+    def MBTA_ALERTS_TXN_CONTEXT(config):
         return TransactionContext(MBTAAlertsRequest(), MBTAAlertsReply(config))
+    @staticmethod
+    def SLACK_TXN_CONTEXT(config, payload):
+        return TransactionContext(SlackRequest(payload), SlackReply(config))

@@ -13,8 +13,6 @@ class Reply(object):
     @abc.abstractmethod
     def __call__(self):
         """Return information from server in a human-readable format"""
-
-class MBTAReply(Reply):
     def adopt(self, j):
         try:
             self.dictionary = json.loads(j)
@@ -22,7 +20,7 @@ class MBTAReply(Reply):
             log.exception('Got exception loading invalid json {0}'.format(j))
             self.dictionary = dict()
 
-class MBTABusReply(MBTAReply):
+class MBTABusReply(Reply):
     def filter_route(self, stops, route):
         relevant_stops = ROUTE_RELEVANT_STOPS.get(str(route), [])
         stop_summaries = []
@@ -63,7 +61,7 @@ class MBTABusReply(MBTAReply):
             log.exception('Failed to filter relevant response informaton')
             return ['An error occurred']
 
-class MBTAAlertsReply(MBTAReply):
+class MBTAAlertsReply(Reply):
     def __call__(self):
         headers = self.dictionary.get('alert_headers', None)
         relevant_headers = []
@@ -74,3 +72,9 @@ class MBTAAlertsReply(MBTAReply):
                 else:
                     log.debug(header.get('header_text') + ' didnt match anything in RELEVANT_ROUTE_KEYWORDS')
         return (relevant_headers if len(relevant_headers) > 0 else ['No alerts'])
+
+class SlackReply(Reply):
+    def __call__(self):
+        log.debug('SlackReply object with dictionary {0} invoked'.format(json.dumps(self.dictionary)))
+    def adopt(self, j):
+        self.dictionary = dict(response_message=j)

@@ -1,14 +1,15 @@
 import os
 import sys
 import argparse
-import web
-import json
 import logging
-from route_resolver import resolve_route
+import time
+import threading
+import web
+from output import OutputFactory, Output
 from config import ConfigAction, Config
-from transaction import TransactionContext
-from output import OutputFactory
-from web.wsgiserver import CherryPyWSGIServer
+from route_resolver import resolve_route
+from rest_api_thread import RestAPIThread
+from slack_messaging_thread import SlackMessagingThread
 
 VERSION='1.0'
 base_dir = os.path.dirname(os.path.realpath(__file__))
@@ -24,10 +25,6 @@ def start_logging(is_debug, log_file=None):
     log.info("Slack-MBTA version {0}".format(VERSION))
     return log
 
-def transaction_flow(txn_context, config, outputter):
-    txn_context.do_transaction()
-    return outputter(txn_context.request, txn_context.reply)
-
 parser = argparse.ArgumentParser(description="Get MBTA info", epilog="(c) 2015 Dan Fithian")
 
 parser.add_argument("-l", dest="log_file", help="Specify a log file", default=None)
@@ -37,68 +34,20 @@ parser.add_argument("-c", dest="config", type=str, help="Provide a config file",
 parser.add_argument("-d", dest="debug", action="store_true", help="Enable debug logging")
 
 # parse the config and set up inputs
-args = parser.parse_args(sys.argv[1:])
+opts = parser.parse_args(sys.argv[1:])
 
 # start logging
-log = start_logging(args.debug, args.log_file)
+log = start_logging(opts.debug, opts.log_file)
 
-config = args.config if args.config is not None else Config.default()
-outputter = OutputFactory.get_outputter(config)
-urls = (
-    '/bus', 'get_bus',
-    '/alert', 'get_alert',
-    '/alerts', 'get_alerts'
-)
+Config.this = opts.config if opts.config is not None else Config.default()
 
-class SlackApp(web.application):
-    def run(self, *middleware):
-        log.info("Starting web application with address {0}:{1}".format(args.ip, args.port))
-        func = self.wsgifunc(*middleware)
-        return web.httpserver.runsimple(func, server_address=(args.ip, args.port))
+class Main(object):
+    def __init__(self, opts):
+        self.slack_messaging_thread = SlackMessagingThread()
+        self.rest_api_thread = RestAPIThread(opts)
+    def __call__(self):
+        self.slack_messaging_thread.start()
+        self.rest_api_thread.start()
 
-class get_bus:
-    def GET(self):
-        route = web.input().text
-        log.info("Received request for bus route {0}".format(route))
-        payload = transaction_flow(
-            TransactionContext.MBTA_BUS(
-                config,
-                resolve_route(route)
-            ),
-            config,
-            outputter
-        )
-        log.info("Replying with {0}".format(payload))
-        return payload
-class get_alert:
-    def GET(self):
-        route = web.input().text
-        log.info("Received alert request for route {0}".format(route))
-        payload = transaction_flow(
-            TransactionContext.MBTA_ALERT(
-                config,
-                resolve_route(route)
-            ),
-            config,
-            outputter
-        )
-        log.info("Replying with {0}".format(payload))
-        return payload
-class get_alerts:
-    def GET(self):
-        log.info("Received request for alerts")
-        payload = transaction_flow(
-            TransactionContext.MBTA_ALERTS(
-                config
-            ),
-            config,
-            outputter
-        )
-        log.info("Replying with {0}".format(payload))
-        return payload
-
-#CherryPyWSGIServer.ssl_certificate = base_dir + '/../cert/server.crt'
-#CherryPyWSGIServer.ssl_private_key = base_dir + '/../cert/server.key'
-if __name__ == "__main__":
-    app = SlackApp(urls, globals())
-    app.run()
+main = Main(opts)
+main()
