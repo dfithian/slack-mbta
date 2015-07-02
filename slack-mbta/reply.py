@@ -49,9 +49,9 @@ class MBTABusReply(Reply):
         if directions is not None and len(directions) > 0:
             for direction in directions:
                 trip_summary = self.filter_trip(direction.get('trip', None), route)
-                if len(trip_summary) > 0:
+                if trip_summary is not None and len(trip_summary) > 0:
                     direction_summaries.extend(["Direction: {0}".format(str(direction["direction_name"]))] + trip_summary)
-        else:
+        if len(direction_summaries) == 0:
             direction_summaries = ['No predictions']
         return direction_summaries
     def __call__(self):
