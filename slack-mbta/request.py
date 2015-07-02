@@ -16,21 +16,22 @@ class MBTARequest(Request):
 
 class MBTABusRequest(MBTARequest):
     def __init__(self, params):
-        self.params = params
         super(MBTABusRequest, self).__init__('predictionsbyroute', { 'route' : params['route'] })
+        self.params = params
     def __str__(self):
         return "Request */bus {0}* from @{1} response".format(str(self.params['route']), str(self.params['user']))
 
 class MBTAAlertRouteRequest(MBTARequest):
     def __init__(self, params):
-        self.params = params
         super(MBTAAlertRouteRequest, self).__init__('alertheadersbyroute', { 'route' : params['route'] })
+        self.params = params
     def __str__(self):
         return "Request */alert {0}* from @{1} response".format(str(self.params['route']), str(self.params['user']))
 
 class MBTAAlertsRequest(MBTARequest):
     def __init__(self, params):
         super(MBTAAlertsRequest, self).__init__('alertheaders', { })
+        self.params = params
     def __str__(self):
         return "Request */alerts* from @{0} response".format(str(self.params['user']))
 
