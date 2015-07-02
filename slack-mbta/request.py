@@ -15,24 +15,24 @@ class MBTARequest(Request):
         super(MBTARequest, self).__init__(url, None)
 
 class MBTABusRequest(MBTARequest):
-    def __init__(self, route):
-        self.route = route
-        super(MBTABusRequest, self).__init__('predictionsbyroute', { 'route' : route })
+    def __init__(self, params):
+        self.params = params
+        super(MBTABusRequest, self).__init__('predictionsbyroute', { 'route' : params['route'] })
     def __str__(self):
-        return "*/bus {0}*".format(str(self.route))
+        return "Request */bus {0}* from @{1} response".format(str(params['route']), str(params['user']))
 
 class MBTAAlertRouteRequest(MBTARequest):
-    def __init__(self, route):
-        self.route = route
-        super(MBTAAlertRouteRequest, self).__init__('alertheadersbyroute', { 'route' : route })
+    def __init__(self, params):
+        self.params = params
+        super(MBTAAlertRouteRequest, self).__init__('alertheadersbyroute', { 'route' : params['route'] })
     def __str__(self):
-        return "*/alert {0}*".format(str(self.route))
+        return "Request */alert {0}* from @{1} response".format(str(params['route']), str(params['user']))
 
 class MBTAAlertsRequest(MBTARequest):
-    def __init__(self):
+    def __init__(self, params):
         super(MBTAAlertsRequest, self).__init__('alertheaders', { })
     def __str__(self):
-        return ("*/alerts*")
+        return "Request */alerts* from @{0} response".format(str(params['user']))
 
 class SlackRequest(Request):
     WEBHOOK_URL = 'https://hooks.slack.com/services/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'

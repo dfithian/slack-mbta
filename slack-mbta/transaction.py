@@ -26,14 +26,14 @@ class TransactionContext(object):
             log.exception('Got exception during do_transaction()')
             self.reply.adopt("{}")
     @staticmethod
-    def MBTA_BUS_TXN_CONTEXT(config, bus):
-        return TransactionContext(MBTABusRequest(bus), MBTABusReply(config))
+    def MBTA_BUS_TXN_CONTEXT(config, params):
+        return TransactionContext(MBTABusRequest(params), MBTABusReply(config))
     @staticmethod
-    def MBTA_ALERT_TXN_CONTEXT(config, route):
-        return TransactionContext(MBTAAlertRouteRequest(route), MBTAAlertsReply(config))
+    def MBTA_ALERT_TXN_CONTEXT(config, params):
+        return TransactionContext(MBTAAlertRouteRequest(params), MBTAAlertsReply(config))
     @staticmethod
-    def MBTA_ALERTS_TXN_CONTEXT(config):
-        return TransactionContext(MBTAAlertsRequest(), MBTAAlertsReply(config))
+    def MBTA_ALERTS_TXN_CONTEXT(config, params):
+        return TransactionContext(MBTAAlertsRequest(params), MBTAAlertsReply(config))
     @staticmethod
     def SLACK_TXN_CONTEXT(config, payload):
         return TransactionContext(SlackRequest(payload), SlackReply(config))

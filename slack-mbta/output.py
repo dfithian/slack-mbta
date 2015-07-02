@@ -33,7 +33,7 @@ class Output(object):
 
 class SlackOutputter(Output):
     def format(self, request, reply):
-        request_info = "Request {0} response:\r\n".format(str(request))
+        request_info = "{0}:\r\n".format(str(request))
         reply_info = '```{0}```'.format('\r\n'.join(str(line) for line in reply()))
         text = request_info + reply_info
         return { 'payload' : json.dumps({ 'text' : request_info + reply_info }) }

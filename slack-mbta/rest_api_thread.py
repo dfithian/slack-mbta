@@ -1,5 +1,6 @@
 import threading
 import web
+import json
 import logging
 from config import Config
 from output import OutputFactory
@@ -19,12 +20,15 @@ def transaction_flow(txn_context, config, outputter):
 
 class get_bus:
     def GET(self):
-        route = web.input().text
-        log.info("Received request for bus route {0}".format(route))
+        input_params = dict(
+            route=web.input().text,
+            user=web.input().user_name
+        )
+        log.info("Received request for bus: {0}".format(json.dumps(input_params)))
         payload = transaction_flow(
             TransactionContext.MBTA_BUS_TXN_CONTEXT(
                 config(),
-                resolve_route(route)
+                input_params
             ),
             config(),
             outputter()
@@ -35,12 +39,15 @@ class get_bus:
 
 class get_alert:
     def GET(self):
-        route = web.input().text
-        log.info("Received alert request for route {0}".format(route))
+        input_params = dict(
+            route=web.input().text,
+            user=web.input().user_name
+        )
+        log.info("Received request for alert: {0}".format(json.dumps(input_params)))
         payload = transaction_flow(
             TransactionContext.MBTA_ALERT_TXN_CONTEXT(
                 config(),
-                resolve_route(route)
+                input_params
             ),
             config(),
             outputter()
@@ -51,10 +58,14 @@ class get_alert:
 
 class get_alerts:
     def GET(self):
-        log.info("Received request for alerts")
+        input_params = dict(
+            user=web.input().user_name
+        )
+        log.info("Received request for alerts: {0}".format(json.dumps(input_params)))
         payload = transaction_flow(
             TransactionContext.MBTA_ALERTS_TXN_CONTEXT(
-                config()
+                config(),
+                input_params
             ),
             config(),
             outputter()
