@@ -2,7 +2,7 @@ import abc
 import json
 import time
 import logging
-from route_resolver import ROUTE_RELEVANT_STOPS, RELEVANT_ROUTE_KEYWORDS
+from route_resolver import RELEVANT_ROUTE_KEYWORDS
 
 log = logging.getLogger(__name__)
 class Reply(object):
@@ -21,14 +21,12 @@ class Reply(object):
 
 class MBTARouteReply(Reply):
     def filter_route(self, stops, route):
-        relevant_stops = ROUTE_RELEVANT_STOPS.get(str(route), [])
         stop_summaries = []
         if stops is not None and len(stops) > 0:
             for stop in stops:
-                if stop.get('stop_id', None) in relevant_stops:
-                    delta = long(round((long(stop["sch_arr_dt"]) - time.mktime(time.localtime()))/60))
-                    stop_name = str(stop.get('stop_name', 'none'))
-                    stop_summaries.append("        at {0} in {1} minutes".format(stop_name, str(delta)))
+                delta = long(round((long(stop["sch_arr_dt"]) - time.mktime(time.localtime()))/60))
+                stop_name = str(stop.get('stop_name', 'none'))
+                stop_summaries.append("        at {0} in {1} minutes".format(stop_name, str(delta)))
         return stop_summaries
     def filter_trip(self, trips, route):
         trip_summaries = {}

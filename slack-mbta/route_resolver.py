@@ -10,19 +10,8 @@ ROUTE_DICTIONARY={
     'blue':'Blue'
 }
 
-# List of stop_ids that we care about
-ROUTE_RELEVANT_STOPS={
-    '59':['8171','8186'],
-    '57':['900'],
-    '71':['8178'],
-    '70':['8297']
-}
-
 RELEVANT_ROUTE_KEYWORDS=[
-    'route 57',
-    'route 59',
-    'route 70',
-    'route 71',
+    'route',
     'red line',
     'orange line',
     'blue line',
