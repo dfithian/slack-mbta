@@ -35,9 +35,9 @@ class MBTAAlertsRequest(MBTARequest):
 class SlackRequest(Request):
     def __init__(self, params, mbta_context):
         channel = '@%s' % (params.user_name) if params.channel_name == 'directmessage' else '#%s' % (params.channel_name)
-        text = '```{0}```'.format('\r\n'.join(str(line) for line in mbta_context.reply()))
-        payload = { 'text' : text, 'channel' : channel_name }
-        if config.config.get('use_webhook_url', false):
+        text = 'reply to *{0} {1}* from *@{2}*: ```{3}```'.format(params.command, params.text, params.user_name, '\r\n'.join(str(line) for line in mbta_context.reply()))
+        payload = { 'text' : text, 'channel' : channel }
+	if not config.config['use_webhook_url']:
             url = params.response_url
             payload.update({ 'response_type' : 'in_channel' })
         else:
