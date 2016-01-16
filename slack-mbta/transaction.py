@@ -17,7 +17,7 @@ def make_mbta_context(endpoint, params):
         return None
 
 def make_slack_context(mbta_context, params):
-    return TransactionContext(SlackRequest(mbta_context), SlackReply())
+    return TransactionContext(SlackRequest(params, mbta_context), SlackReply())
 
 class TransactionContext(object):
     def __init__(self, request, reply):

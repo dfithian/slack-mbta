@@ -33,6 +33,7 @@ class MBTAAlertsRequest(MBTARequest):
         super(MBTAAlertsRequest, self).__init__('alertheaders', { })
 
 class SlackRequest(Request):
-    def __init__(self, mbta_context):
+    def __init__(self, params, mbta_context):
+        channel = '@%s' % (params.user_name) if params.channel_name == 'directmessage' else '#%s' % (params.channel_name)
         text = '```{0}```'.format('\r\n'.join(str(line) for line in mbta_context.reply()))
-        super(SlackRequest, self).__init__(config.config['webhook_url'], { 'payload' : json.dumps({ 'text' : text }) })
+        super(SlackRequest, self).__init__(config.config['webhook_url'], { 'payload' : json.dumps({ 'text' : text, 'channel' : channel }) })
