@@ -7,13 +7,13 @@ from route_resolver import resolve_route
 from slack_messaging_thread import SlackMessagingThread
 
 log = logging.getLogger(__name__)
-class get_bus:
+class get_route:
     def GET(self):
         input_params = dict(
             route=web.input().text,
             user=web.input().user_name
         )
-        log.info("Received request for bus: {0}".format(json.dumps(input_params)))
+        log.info("Received request for route: {0}".format(json.dumps(input_params)))
         SlackMessagingThread.queue.put((TransactionContext.MBTA_BUS_TXN_CONTEXT, input_params))
         return ''
 
@@ -47,7 +47,7 @@ class RestAPIThread(threading.Thread):
         self.config = config
     def run(self):
         urls = (
-            '/bus', 'get_bus',
+            '/route', 'get_route',
             '/alert', 'get_alert',
             '/alerts', 'get_alerts'
         )

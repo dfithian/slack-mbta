@@ -19,7 +19,7 @@ class Reply(object):
             log.exception('Got exception loading invalid json {0}'.format(j))
             self.dictionary = dict()
 
-class MBTABusReply(Reply):
+class MBTARouteReply(Reply):
     def filter_route(self, stops, route):
         relevant_stops = ROUTE_RELEVANT_STOPS.get(str(route), [])
         stop_summaries = []

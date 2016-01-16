@@ -14,9 +14,9 @@ class MBTARequest(Request):
         url = self.API_BASE + '{0}?{1}'.format(endpoint, serialized_params)
         super(MBTARequest, self).__init__(url, None)
 
-class MBTABusRequest(MBTARequest):
+class MBTARouteRequest(MBTARequest):
     def __init__(self, params):
-        super(MBTABusRequest, self).__init__('predictionsbyroute', { 'route' : params['route'] })
+        super(MBTARouteRequest, self).__init__('predictionsbyroute', { 'route' : params['route'] })
         self.params = params
     def __str__(self):
         return "Request */bus {0}* from *@{1}* response".format(str(self.params['route']), str(self.params['user']))

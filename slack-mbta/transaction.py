@@ -2,8 +2,8 @@ import json
 import urllib
 import urllib2
 import logging
-from request import MBTAAlertsRequest, MBTAAlertRouteRequest, MBTABusRequest, SlackRequest
-from reply import MBTAAlertsReply, MBTABusReply, SlackReply
+from request import MBTAAlertsRequest, MBTAAlertRouteRequest, MBTARouteRequest, SlackRequest
+from reply import MBTAAlertsReply, MBTARouteReply, SlackReply
 
 log = logging.getLogger(__name__)
 class TransactionContext(object):
@@ -27,7 +27,7 @@ class TransactionContext(object):
             self.reply.adopt("{}")
     @staticmethod
     def MBTA_BUS_TXN_CONTEXT(config, params):
-        return TransactionContext(MBTABusRequest(params), MBTABusReply(config))
+        return TransactionContext(MBTARouteRequest(params), MBTARouteReply(config))
     @staticmethod
     def MBTA_ALERT_TXN_CONTEXT(config, params):
         return TransactionContext(MBTAAlertRouteRequest(params), MBTAAlertsReply(config))
