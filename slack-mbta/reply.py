@@ -4,7 +4,6 @@ import time
 import logging
 from route_resolver import ROUTE_RELEVANT_STOPS, RELEVANT_ROUTE_KEYWORDS
 
-"""Represents a reply object from the server"""
 log = logging.getLogger(__name__)
 class Reply(object):
     __metaclass__ = abc.ABCMeta

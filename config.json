@@ -1,0 +1,5 @@
+{
+    "host":"localhost",
+    "port":8080,
+    "webhook_url":"https://hooks.slack.com/services/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"
+}

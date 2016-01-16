@@ -23,7 +23,7 @@ class TransactionContext(object):
             log.info('Got raw reply {0}'.format(j))
             self.reply.adopt(j)
         except Exception:
-            log.exception('Got exception during do_transaction()')
+            log.exception('Got exception during do_transaction')
             self.reply.adopt("{}")
     @staticmethod
     def MBTA_BUS_TXN_CONTEXT(config, params):
@@ -36,4 +36,4 @@ class TransactionContext(object):
         return TransactionContext(MBTAAlertsRequest(params), MBTAAlertsReply(config))
     @staticmethod
     def SLACK_TXN_CONTEXT(config, payload):
-        return TransactionContext(SlackRequest(payload), SlackReply(config))
+        return TransactionContext(SlackRequest(config, payload), SlackReply(config))

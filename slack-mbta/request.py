@@ -36,6 +36,5 @@ class MBTAAlertsRequest(MBTARequest):
         return "Request */alerts* from *@{0}* response".format(str(self.params['user']))
 
 class SlackRequest(Request):
-    WEBHOOK_URL = 'https://hooks.slack.com/services/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'
-    def __init__(self, payload):
-        super(SlackRequest, self).__init__(self.WEBHOOK_URL, payload)
+    def __init__(self, config, payload):
+        super(SlackRequest, self).__init__(config.webhook_url, payload)

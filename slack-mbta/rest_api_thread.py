@@ -39,12 +39,12 @@ class get_alerts:
 class RestAPIThread(threading.Thread):
     class SlackApp(web.application):
         def run(self, *middleware):
-            log.info("Starting web application with address {0}:{1}".format(self.opts.ip, self.opts.port))
+            log.info("Starting web application with address {0}:{1}".format(self.config.host, self.config.port))
             func = self.wsgifunc(*middleware)
-            return web.httpserver.runsimple(func, server_address=(self.opts.ip, self.opts.port))
-    def __init__(self, opts, *args, **kwargs):
+            return web.httpserver.runsimple(func, server_address=(self.config.host, self.config.port))
+    def __init__(self, config, *args, **kwargs):
         super(RestAPIThread, self).__init__(*args, **kwargs)
-        self.opts = opts
+        self.config = config
     def run(self):
         urls = (
             '/bus', 'get_bus',
@@ -52,5 +52,5 @@ class RestAPIThread(threading.Thread):
             '/alerts', 'get_alerts'
         )
         app = self.SlackApp(urls, globals())
-        app.opts = self.opts
+        app.config = self.config
         app.run()
