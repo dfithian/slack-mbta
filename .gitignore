@@ -1,3 +1,7 @@
 *.pyc
 slack-mbta.log
 cert/
+build/
+dist/
+slack_mbta.egg-info/
+config.json
