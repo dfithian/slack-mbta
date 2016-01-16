@@ -1,3 +1,7 @@
+import json
+import config
+from route_resolver import resolve_route
+
 class Request(object):
     def __init__(self, url, payload):
         self.url = url
@@ -16,25 +20,19 @@ class MBTARequest(Request):
 
 class MBTARouteRequest(MBTARequest):
     def __init__(self, params):
-        super(MBTARouteRequest, self).__init__('predictionsbyroute', { 'route' : params['route'] })
-        self.params = params
-    def __str__(self):
-        return "Request */route {0}* from *@{1}* response".format(str(self.params['route']), str(self.params['user']))
+        route = resolve_route(params.text)
+        super(MBTARouteRequest, self).__init__('predictionsbyroute', { 'route' : route })
 
 class MBTAAlertRouteRequest(MBTARequest):
     def __init__(self, params):
-        super(MBTAAlertRouteRequest, self).__init__('alertheadersbyroute', { 'route' : params['route'] })
-        self.params = params
-    def __str__(self):
-        return "Request */alert {0}* from *@{1}* response".format(str(self.params['route']), str(self.params['user']))
+        route = resolve_route(params.text)
+        super(MBTAAlertRouteRequest, self).__init__('alertheadersbyroute', { 'route' : route })
 
 class MBTAAlertsRequest(MBTARequest):
     def __init__(self, params):
         super(MBTAAlertsRequest, self).__init__('alertheaders', { })
-        self.params = params
-    def __str__(self):
-        return "Request */alerts* from *@{0}* response".format(str(self.params['user']))
 
 class SlackRequest(Request):
-    def __init__(self, config, payload):
-        super(SlackRequest, self).__init__(config.webhook_url, payload)
+    def __init__(self, mbta_context):
+        text = '```{0}```'.format('\r\n'.join(str(line) for line in mbta_context.reply()))
+        super(SlackRequest, self).__init__(config.config['webhook_url'], { 'payload' : json.dumps({ 'text' : text }) })

@@ -1,0 +1,3 @@
+ROUTE_ENDPOINT = 'route'
+ALERT_ENDPOINT = 'alert'
+ALERTS_ENDPOINT = 'alerts'

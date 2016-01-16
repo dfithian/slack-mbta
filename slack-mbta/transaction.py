@@ -1,11 +1,24 @@
-import json
 import urllib
 import urllib2
 import logging
+from const import ROUTE_ENDPOINT, ALERTS_ENDPOINT, ALERT_ENDPOINT
 from request import MBTAAlertsRequest, MBTAAlertRouteRequest, MBTARouteRequest, SlackRequest
 from reply import MBTAAlertsReply, MBTARouteReply, SlackReply
 
 log = logging.getLogger(__name__)
+def make_mbta_context(endpoint, params):
+    if endpoint == ROUTE_ENDPOINT:
+        return TransactionContext(MBTARouteRequest(params), MBTARouteReply())
+    elif endpoint == ALERTS_ENDPOINT:
+        return TransactionContext(MBTAAlertsRequest(params), MBTAAlertsReply())
+    elif endpoint == ALERT_ENDPOINT:
+        return TransactionContext(MBTAAlertRouteRequest(params), MBTAAlertsReply())
+    else:
+        return None
+
+def make_slack_context(mbta_context, params):
+    return TransactionContext(SlackRequest(mbta_context), SlackReply())
+
 class TransactionContext(object):
     def __init__(self, request, reply):
         self.request = request
@@ -17,23 +30,11 @@ class TransactionContext(object):
         else:
             data = urllib.urlencode(self.request.payload)
             req = urllib2.Request(self.request.url, data)
-        log.info('About to send request with payload {0} to url {1}'.format(data, self.request.url))
+        log.info('about to send request with payload {0} to url {1}'.format(data, self.request.url))
         try:
             j = urllib2.urlopen(req).read()
-            log.info('Got raw reply {0}'.format(j))
+            log.info('got raw reply {0}'.format(j))
             self.reply.adopt(j)
         except Exception:
-            log.exception('Got exception during do_transaction')
+            log.exception('got exception during transaction')
             self.reply.adopt("{}")
-    @staticmethod
-    def MBTA_ROUTE_TXN_CONTEXT(config, params):
-        return TransactionContext(MBTARouteRequest(params), MBTARouteReply(config))
-    @staticmethod
-    def MBTA_ALERT_TXN_CONTEXT(config, params):
-        return TransactionContext(MBTAAlertRouteRequest(params), MBTAAlertsReply(config))
-    @staticmethod
-    def MBTA_ALERTS_TXN_CONTEXT(config, params):
-        return TransactionContext(MBTAAlertsRequest(params), MBTAAlertsReply(config))
-    @staticmethod
-    def SLACK_TXN_CONTEXT(config, payload):
-        return TransactionContext(SlackRequest(config, payload), SlackReply(config))

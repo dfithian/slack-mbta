@@ -1,4 +1,3 @@
-import abc
 import json
 import time
 import logging
@@ -6,17 +5,11 @@ from route_resolver import RELEVANT_ROUTE_KEYWORDS
 
 log = logging.getLogger(__name__)
 class Reply(object):
-    __metaclass__ = abc.ABCMeta
-    def __init__(self, config):
-        self.config = config
-    @abc.abstractmethod
-    def __call__(self):
-        """Return information from server in a human-readable format"""
     def adopt(self, j):
         try:
             self.dictionary = json.loads(j)
         except Exception:
-            log.exception('Got exception loading invalid json {0}'.format(j))
+            log.exception('got exception loading invalid json {0}'.format(j))
             self.dictionary = dict()
 
 class MBTARouteReply(Reply):
@@ -50,14 +43,14 @@ class MBTARouteReply(Reply):
                 if trip_summary is not None and len(trip_summary) > 0:
                     direction_summaries.extend(["Direction: {0}".format(str(direction["direction_name"]))] + trip_summary)
         if len(direction_summaries) == 0:
-            direction_summaries = ['No predictions']
+            direction_summaries = ['no predictions']
         return direction_summaries
     def __call__(self):
         try:
             return self.filter_direction(self.dictionary.get('direction', None), self.dictionary.get('route_id'))
         except Exception:
-            log.exception('Failed to filter relevant response informaton')
-            return ['An error occurred']
+            log.exception('failed to filter relevant response informaton')
+            return ['an error occurred']
 
 class MBTAAlertsReply(Reply):
     def __call__(self):
