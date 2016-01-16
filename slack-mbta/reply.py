@@ -18,7 +18,7 @@ class MBTARouteReply(Reply):
         if stops is not None and len(stops) > 0:
             for stop in stops:
                 delta = long(round((long(stop["sch_arr_dt"]) - time.mktime(time.localtime()))/60))
-		if delta > 0:
+		if delta > 0 and delta <= 15:
 			stop_name = str(stop.get('stop_name', 'none'))
 			stop_summaries.append("        at {0} in {1} minutes".format(stop_name, str(delta)))
         return stop_summaries
