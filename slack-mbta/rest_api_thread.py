@@ -14,7 +14,7 @@ class get_route:
             user=web.input().user_name
         )
         log.info("Received request for route: {0}".format(json.dumps(input_params)))
-        SlackMessagingThread.queue.put((TransactionContext.MBTA_BUS_TXN_CONTEXT, input_params))
+        SlackMessagingThread.queue.put((TransactionContext.MBTA_ROUTE_TXN_CONTEXT, input_params))
         return ''
 
 class get_alert:

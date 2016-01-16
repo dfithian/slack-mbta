@@ -26,7 +26,7 @@ class TransactionContext(object):
             log.exception('Got exception during do_transaction')
             self.reply.adopt("{}")
     @staticmethod
-    def MBTA_BUS_TXN_CONTEXT(config, params):
+    def MBTA_ROUTE_TXN_CONTEXT(config, params):
         return TransactionContext(MBTARouteRequest(params), MBTARouteReply(config))
     @staticmethod
     def MBTA_ALERT_TXN_CONTEXT(config, params):

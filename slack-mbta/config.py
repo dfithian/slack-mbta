@@ -14,7 +14,5 @@ class Config(object):
     def load(self, json):
         self.host = json.get('host')
         self.port = json.get('port')
-        self.max_bus_lines = json.get('max_bus_lines', 3)
-        self.max_alerts = json.get('max_alerts', 3)
         self.outputter = SlackOutputter()
         self.webhook_url = json.get('webhook_url')
