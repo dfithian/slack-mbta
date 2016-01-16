@@ -25,8 +25,9 @@ class MBTARouteReply(Reply):
         if stops is not None and len(stops) > 0:
             for stop in stops:
                 delta = long(round((long(stop["sch_arr_dt"]) - time.mktime(time.localtime()))/60))
-                stop_name = str(stop.get('stop_name', 'none'))
-                stop_summaries.append("        at {0} in {1} minutes".format(stop_name, str(delta)))
+		if delta > 0:
+			stop_name = str(stop.get('stop_name', 'none'))
+			stop_summaries.append("        at {0} in {1} minutes".format(stop_name, str(delta)))
         return stop_summaries
     def filter_trip(self, trips, route):
         trip_summaries = {}

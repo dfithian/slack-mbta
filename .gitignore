@@ -5,3 +5,4 @@ build/
 dist/
 slack_mbta.egg-info/
 config.json
+*.out
