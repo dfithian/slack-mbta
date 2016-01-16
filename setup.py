@@ -9,6 +9,5 @@ setup(name='slack-mbta',
       packages=['slack-mbta'],
       install_requires=[
           'argparse',
-          'web.py',
-          'enum'
+          'web.py'
       ])
