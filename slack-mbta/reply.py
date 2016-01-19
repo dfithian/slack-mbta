@@ -33,14 +33,15 @@ class MBTARouteReply(Reply):
     def filter_stops_for_trip(self, key, stops):
         for stop in stops:
             stop_name = stop['stop_name']
+            stop_sequence = stop['stop_sequence']
             self.filter_time_for_stop(stop_name, stop['sch_arr_dt'])
             other_stops = self.stops_by_trip.get(key, [])
             if stop_name not in other_stops:
-                self.stops_by_trip[key] = other_stops + [stop_name]
+                self.stops_by_trip[key] = other_stops + [(stop_name, stop_sequence)]
     def format_stops(self, key, depth):
         stops = self.stops_by_trip.get(key, [])
-        f = lambda stop: self.format_times(stop, depth)
-        return reduce(add, map(f, stops))
+        f = lambda (stop, _): self.format_times(stop, depth)
+        return reduce(add, map(f, sorted(stops, key=lambda stop: stop[1])))
 
     def filter_trips_for_direction(self, key, trips):
         for trip in trips:
