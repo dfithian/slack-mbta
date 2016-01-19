@@ -33,7 +33,7 @@ class MBTARouteReply(Reply):
     def filter_stops_for_trip(self, key, stops):
         for stop in stops:
             stop_name = stop['stop_name']
-            stop_sequence = stop['stop_sequence']
+            stop_sequence = int(stop['stop_sequence'])
             self.filter_time_for_stop(stop_name, stop['sch_arr_dt'])
             other_stops = self.stops_by_trip.get(key, [])
             if len(filter(lambda stop: stop[0] == stop_name, other_stops)) == 0:
