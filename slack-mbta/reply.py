@@ -34,8 +34,9 @@ class MBTARouteReply(Reply):
         for stop in stops:
             stop_name = stop['stop_name']
             self.filter_time_for_stop(stop_name, stop['sch_arr_dt'])
-            other_stops = self.stops_by_trip.get(stop_name, [])
-            self.stops_by_trip[key] = other_stops + [stop_name]
+            other_stops = self.stops_by_trip.get(key, [])
+            if stop_name not in other_stops:
+                self.stops_by_trip[key] = other_stops + [stop_name]
     def format_stops(self, key, depth):
         stops = self.stops_by_trip.get(key, [])
         f = lambda stop: self.format_times(stop, depth)
@@ -47,10 +48,11 @@ class MBTARouteReply(Reply):
             stops = trip['stop']
             self.filter_stops_for_trip(trip_name, stops)
             other_trips = self.trips_by_direction.get(key, [])
-            self.trips_by_direction[key] = other_trips + [trip_name]
+            if trip_name not in other_trips:
+                self.trips_by_direction[key] = other_trips + [trip_name]
     def format_trips(self, key, depth):
         trips = self.trips_by_direction.get(key, [])
-        f = lambda trip: ['    '*depth + 'Trip {0}'.format(trip)] + self.format_stops(trip, depth + 1)
+        f = lambda trip: ['    '*depth + 'to {0}'.format(trip)] + self.format_stops(trip, depth + 1)
         return reduce(add, map(f, trips))
 
     def filter_directions(self, directions):
@@ -58,10 +60,11 @@ class MBTARouteReply(Reply):
             direction_name = direction['direction_name']
             trips = direction['trip']
             self.filter_trips_for_direction(direction_name, trips)
-            self.directions.append(direction_name)
+            if direction_name not in self.directions:
+                self.directions.append(direction_name)
     def format_directions(self, depth):
         directions = self.directions
-        f = lambda dir: ['    '*depth + 'Direction {0}'.format(dir)] + self.format_trips(dir, depth + 1)
+        f = lambda dir: ['    '*depth + '{0}'.format(dir)] + self.format_trips(dir, depth + 1)
         return reduce(add, map(f, directions))
 
     def __call__(self):

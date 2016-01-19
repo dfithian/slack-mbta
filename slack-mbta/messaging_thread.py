@@ -10,7 +10,7 @@ class MessagingThread(threading.Thread):
         super(MessagingThread, self).__init__(*args, **kwargs)
     def run(self):
         try:
-            mbta_context = make_mbta_context(self.endpoint, self.params)
+            mbta_context = make_mbta_context(self.params)
             mbta_context.do_transaction()
             slack_context = make_slack_context(mbta_context, self.params)
             slack_context.do_transaction()
