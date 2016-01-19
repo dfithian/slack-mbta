@@ -1,6 +1,8 @@
 import json
 import time
 import logging
+from operator import add
+from const import SECONDS_TO_MINUTES
 from route_resolver import RELEVANT_ROUTE_KEYWORDS
 
 log = logging.getLogger(__name__)
@@ -13,43 +15,61 @@ class Reply(object):
             self.dictionary = dict()
 
 class MBTARouteReply(Reply):
-    def filter_route(self, stops, route):
-        stop_summaries = []
-        if stops is not None and len(stops) > 0:
-            for stop in stops:
-                delta = long(round((long(stop["sch_arr_dt"]) - time.mktime(time.localtime()))/60))
-		if delta > 0 and delta <= 15:
-			stop_name = str(stop.get('stop_name', 'none'))
-			stop_summaries.append("        at {0} in {1} minutes".format(stop_name, str(delta)))
-        return stop_summaries
-    def filter_trip(self, trips, route):
-        trip_summaries = {}
-        if trips is not None and len(trips) > 0:
-            for trip in trips:
-                stop_summaries = self.filter_route(trip.get('stop', None), route)
-                if len(stop_summaries) > 0:
-                    trip_headsign = str(trip.get('trip_headsign', 'none'))
-                    similar_trips = trip_summaries.get(trip_headsign, None)
-                    if similar_trips is not None:
-                        trip_summaries[trip_headsign].extend(stop_summaries)
-                    else:
-                        trip_summaries[trip_headsign] = ["    Trip {0}".format(trip_headsign)] + stop_summaries
-        return reduce(lambda x,y: x.extend(y), trip_summaries.values()) if len(trip_summaries.values()) > 0 else []
-    def filter_direction(self, directions, route):
-        direction_summaries = []
-        if directions is not None and len(directions) > 0:
-            for direction in directions:
-                trip_summary = self.filter_trip(direction.get('trip', None), route)
-                if trip_summary is not None and len(trip_summary) > 0:
-                    direction_summaries.extend(["Direction: {0}".format(str(direction["direction_name"]))] + trip_summary)
-        if len(direction_summaries) == 0:
-            direction_summaries = ['no predictions']
-        return direction_summaries
+    def __init__(self):
+        self.current_time = time.mktime(time.localtime())
+        self.times_by_stop = {}
+        self.stops_by_trip = {}
+        self.trips_by_direction = {}
+        self.directions = []
+    def filter_time_for_stop(self, key, eta):
+        delta = long(round((long(eta) - self.current_time)/60))
+        if delta > 0:
+            times = self.times_by_stop.get(key, [])
+            self.times_by_stop[key] = times + [delta]
+    def format_times(self, key, depth):
+        deltas = map(str, sorted(self.times_by_stop.get(key, [])))
+        return ['    '*depth + 'at {0}: {1} minutes'.format(key, ', '.join(deltas))]
+
+    def filter_stops_for_trip(self, key, stops):
+        for stop in stops:
+            stop_name = stop['stop_name']
+            self.filter_time_for_stop(stop_name, stop['sch_arr_dt'])
+            other_stops = self.stops_by_trip.get(stop_name, [])
+            self.stops_by_trip[key] = other_stops + [stop_name]
+    def format_stops(self, key, depth):
+        stops = self.stops_by_trip.get(key, [])
+        f = lambda stop: self.format_times(stop, depth)
+        return reduce(add, map(f, stops))
+
+    def filter_trips_for_direction(self, key, trips):
+        for trip in trips:
+            trip_name = trip['trip_headsign']
+            stops = trip['stop']
+            self.filter_stops_for_trip(trip_name, stops)
+            other_trips = self.trips_by_direction.get(key, [])
+            self.trips_by_direction[key] = other_trips + [trip_name]
+    def format_trips(self, key, depth):
+        trips = self.trips_by_direction.get(key, [])
+        f = lambda trip: ['    '*depth + 'Trip {0}'.format(trip)] + self.format_stops(trip, depth + 1)
+        return reduce(add, map(f, trips))
+
+    def filter_directions(self, directions):
+        for direction in directions:
+            direction_name = direction['direction_name']
+            trips = direction['trip']
+            self.filter_trips_for_direction(direction_name, trips)
+            self.directions.append(direction_name)
+    def format_directions(self, depth):
+        directions = self.directions
+        f = lambda dir: ['    '*depth + 'Direction {0}'.format(dir)] + self.format_trips(dir, depth + 1)
+        return reduce(add, map(f, directions))
+
     def __call__(self):
         try:
-            return self.filter_direction(self.dictionary.get('direction', None), self.dictionary.get('route_id'))
+            self.filter_directions(self.dictionary['direction'])
+            return self.format_directions(0)
         except Exception:
-            log.exception('failed to filter relevant response informaton')
+            log.exception('failed to filter relevant response information')
             return ['an error occurred']
 
 class SlackReply(Reply):
