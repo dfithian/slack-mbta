@@ -23,15 +23,6 @@ class MBTARouteRequest(MBTARequest):
         route = resolve_route(params.text)
         super(MBTARouteRequest, self).__init__('predictionsbyroute', { 'route' : route })
 
-class MBTAAlertRouteRequest(MBTARequest):
-    def __init__(self, params):
-        route = resolve_route(params.text)
-        super(MBTAAlertRouteRequest, self).__init__('alertheadersbyroute', { 'route' : route })
-
-class MBTAAlertsRequest(MBTARequest):
-    def __init__(self, params):
-        super(MBTAAlertsRequest, self).__init__('alertheaders', { })
-
 class SlackRequest(Request):
     def __init__(self, params, mbta_context):
         channel = '@%s' % (params.user_name) if params.channel_name == 'directmessage' else '#%s' % (params.channel_name)

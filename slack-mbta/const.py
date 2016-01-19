@@ -1,3 +1,2 @@
 ROUTE_ENDPOINT = 'route'
-ALERT_ENDPOINT = 'alert'
-ALERTS_ENDPOINT = 'alerts'
+SECONDS_TO_MINUTES = lambda x: x / 60

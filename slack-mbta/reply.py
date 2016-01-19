@@ -52,18 +52,6 @@ class MBTARouteReply(Reply):
             log.exception('failed to filter relevant response informaton')
             return ['an error occurred']
 
-class MBTAAlertsReply(Reply):
-    def __call__(self):
-        headers = self.dictionary.get('alert_headers', None)
-        relevant_headers = []
-        if headers is not None and len(headers) > 0:
-            for header in headers:
-                if any(keyword in header.get('header_text', '').lower() for keyword in RELEVANT_ROUTE_KEYWORDS):
-                    relevant_headers.append(header["header_text"])
-                else:
-                    log.debug(header.get('header_text') + ' didnt match anything in RELEVANT_ROUTE_KEYWORDS')
-        return (relevant_headers if len(relevant_headers) > 0 else ['No alerts'])
-
 class SlackReply(Reply):
     def __call__(self):
         log.debug('SlackReply object with dictionary {0} invoked'.format(json.dumps(self.dictionary)))

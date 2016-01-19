@@ -1,20 +1,13 @@
 import urllib
 import urllib2
 import logging
-from const import ROUTE_ENDPOINT, ALERTS_ENDPOINT, ALERT_ENDPOINT
-from request import MBTAAlertsRequest, MBTAAlertRouteRequest, MBTARouteRequest, SlackRequest
-from reply import MBTAAlertsReply, MBTARouteReply, SlackReply
+from const import ROUTE_ENDPOINT
+from request import MBTARouteRequest, SlackRequest
+from reply import MBTARouteReply, SlackReply
 
 log = logging.getLogger(__name__)
-def make_mbta_context(endpoint, params):
-    if endpoint == ROUTE_ENDPOINT:
-        return TransactionContext(MBTARouteRequest(params), MBTARouteReply())
-    elif endpoint == ALERTS_ENDPOINT:
-        return TransactionContext(MBTAAlertsRequest(params), MBTAAlertsReply())
-    elif endpoint == ALERT_ENDPOINT:
-        return TransactionContext(MBTAAlertRouteRequest(params), MBTAAlertsReply())
-    else:
-        return None
+def make_mbta_context(params):
+    return TransactionContext(MBTARouteRequest(params), MBTARouteReply())
 
 def make_slack_context(mbta_context, params):
     return TransactionContext(SlackRequest(params, mbta_context), SlackReply())
