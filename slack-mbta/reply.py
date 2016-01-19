@@ -36,12 +36,12 @@ class MBTARouteReply(Reply):
             stop_sequence = stop['stop_sequence']
             self.filter_time_for_stop(stop_name, stop['sch_arr_dt'])
             other_stops = self.stops_by_trip.get(key, [])
-            if stop_name not in other_stops:
+            if len(filter(lambda stop: stop[0] == stop_name, other_stops)) == 0:
                 self.stops_by_trip[key] = other_stops + [(stop_name, stop_sequence)]
     def format_stops(self, key, depth):
-        stops = self.stops_by_trip.get(key, [])
+        stops = sorted(self.stops_by_trip.get(key, []), key=lambda stop: stop[1])
         f = lambda (stop, _): self.format_times(stop, depth)
-        return reduce(add, map(f, sorted(stops, key=lambda stop: stop[1])))
+        return reduce(add, map(f, stops), [])
 
     def filter_trips_for_direction(self, key, trips):
         for trip in trips:
@@ -54,7 +54,7 @@ class MBTARouteReply(Reply):
     def format_trips(self, key, depth):
         trips = self.trips_by_direction.get(key, [])
         f = lambda trip: ['    '*depth + 'to {0}'.format(trip)] + self.format_stops(trip, depth + 1)
-        return reduce(add, map(f, trips))
+        return reduce(add, map(f, trips), [])
 
     def filter_directions(self, directions):
         for direction in directions:
@@ -66,7 +66,7 @@ class MBTARouteReply(Reply):
     def format_directions(self, depth):
         directions = self.directions
         f = lambda dir: ['    '*depth + '{0}'.format(dir)] + self.format_trips(dir, depth + 1)
-        return reduce(add, map(f, directions))
+        return reduce(add, map(f, directions), [])
 
     def __call__(self):
         try:
